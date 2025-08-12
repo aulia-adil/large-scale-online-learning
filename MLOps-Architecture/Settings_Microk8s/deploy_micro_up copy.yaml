@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-update
+spec:
+  selector:
+    matchLabels:
+      app: api-update
+  template:
+    metadata:
+      labels:
+        app: api-update
+    spec:
+      nodeName: minikube
+      initContainers:
+      - name: copy-files
+        image: mgrodrigues001/api_flask_update:up_v8.1
+        command: ["/bin/sh", "-c", "if [ ! -f /persistent-app/.initialized ]; then cp -r /app/* /persistent-app/; touch /persistent-app/.initialized; fi"]
+        volumeMounts:
+        - name: app-storage
+          mountPath: /persistent-app
+      containers:
+        - image: mgrodrigues001/api_flask_update:up_v8.1
+          imagePullPolicy: Always
+          name: api-update
+          resources:
+          limits:
+            cpu: "1500m"
+            memory: "12Gi"
+          requests:
+            cpu: "1500m"
+            memory: "6Gi"
+          ports:
+          - containerPort: 5002
+          command: ["/bin/sh"]
+          args: ["-c", "tail -f /dev/null"]
+          volumeMounts:
+          - name: app-storage
+            mountPath: /app
+      volumes:
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: api-update-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-update-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

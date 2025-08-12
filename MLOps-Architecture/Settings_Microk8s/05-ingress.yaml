@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mlops-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+        - path: /update-service(/|$)(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: api-update
+              port:
+                number: 5002
+    - http:
+        paths:
+        - path: /inference-service(/|$)(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: api-inferencia
+              port:
+                number: 5001
+    - http:
+        paths:
+          - path: /mlflow-service(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mlflow
+                port:
+                  number: 5000

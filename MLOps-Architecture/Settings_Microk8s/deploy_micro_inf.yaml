@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-inferencia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-inferencia
+  template:
+    metadata:
+      labels:
+        app: api-inferencia
+    spec:
+      serviceAccountName: my-app-sa
+      nodeName: minikube
+      initContainers:
+      - name: copy-files
+        image: mgrodrigues001/api_flask_inferencia:inf_v8.0
+        command: ["/bin/sh", "-c", "if [ ! -f /persistent-app/.initialized ]; then cp -r /app/* /persistent-app/; touch /persistent-app/.initialized; fi"]
+        volumeMounts:
+        - name: app-storage
+          mountPath: /persistent-app
+      containers:
+      - image: mgrodrigues001/api_flask_inferencia:inf_v8.0
+        imagePullPolicy: Always
+        name: api-inferencia
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+        ports:
+        - containerPort: 5001
+        command: ["/bin/sh"]
+        args: ["-c", "tail -f /dev/null"]
+        volumeMounts:
+        - name: app-storage
+          mountPath: /app
+      volumes:
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: api-inferencia-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-inferencia-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

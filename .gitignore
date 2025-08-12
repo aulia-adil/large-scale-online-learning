@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env
+venv/
+ENV/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files
+*.csv
+*.arff
+*.zip
+*.tar.gz
+*.tar
+*.h5
+*.db
+*.sqlite
+*.log
+
+# Do not ignore datasets in Datasets/real_usage/
+!Datasets/real_usage/*.csv
+!Datasets/real_usage/*.arff
+!Datasets/real_usage/*.zip
+# Ignore youchoose.csv files in real_usage
+Datasets/real_usage/youchoose_first_train.csv
+Datasets/real_usage/youchoose_real_test.csv
+
+# VS Code
+.vscode/
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Helm
+helm.zip
+get_helm.sh
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.out
+*.class
+
+# Misc
+*.bak
+*.swp
+*.tmp
+
+# Ignore experiment results and mlruns
+experiment-results/
+mlruns/
+
+# Ignore temp folders
+/temp/
+
+# Ignore images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Ignore settings and configuration
+Settings_Microk8s/
+# But do not ignore Settings_Microk8s folder in MLOps-Architecture
+!MLOps-Architecture/Settings_Microk8s/
+
+# Ignore monitoring and testing configs
+monitoring-testing/
+
+# Ignore windows binaries
+windows-amd64/
+
+# Ignore all subfolders in MLOps-Architecture/Serialization_Datasets
+MLOps-Architecture/Serialization_Datasets/*/
+
+# Ignore all subfolders in MLOps-Architecture/terraform_stuff
+MLOps-Architecture/terraform_stuff/*/
+# Do not ignore deploy_real_kubernetes subfolder
+!MLOps-Architecture/terraform_stuff/deploy_real_kubernetes/
+
+# Ignore learn-hoeffding-tree folder
+learn-hoeffding-tree/

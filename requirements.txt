@@ -1,0 +1,13 @@
+numpy
+pandas
+scikit-learn
+jupyter
+matplotlib
+seaborn
+mlflow
+locust
+kafka-python
+setuptools
+confluent-kafka
+river
+gevent

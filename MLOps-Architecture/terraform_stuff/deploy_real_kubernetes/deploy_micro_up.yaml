@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-update
+spec:
+  selector:
+    matchLabels:
+      app: api-update
+  template:
+    metadata:
+      labels:
+        app: api-update
+    spec:
+      containers:
+      - args:
+        - -c
+        - tail -f /dev/null
+        command:
+        - /bin/sh
+        image: mgrodrigues001/api_flask_update:up_v8.1
+        imagePullPolicy: Always
+        name: api-update
+        ports:
+        - containerPort: 5002
+        resources:
+          limits:
+            cpu: 1500m
+            memory: 7Gi
+          requests:
+            cpu: 1500m
+            memory: 7Gi
+        volumeMounts:
+        - mountPath: /app
+          name: app-storage
+      nodeName: gke-two-node-cluster-node-pool-1-260bb633-tgkc
+      volumes:
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: api-update-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-update-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: api-update-pv
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  gcePersistentDisk:
+    fsType: ext4
+    pdName: api-update-disk
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem

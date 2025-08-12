@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-inferencia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-inferencia
+  template:
+    metadata:
+      labels:
+        app: api-inferencia
+    spec:
+      # serviceAccountName: my-app-sa  <-- This line has been removed
+      # Assign this deployment to 'node-pool-1' created in Terraform
+      nodeSelector:
+        cloud.google.com/gke-nodepool: node-pool-1
+      initContainers:
+      - name: copy-files
+        image: mgrodrigues001/api_flask_inferencia:inf_v8.0
+        command: ["/bin/sh", "-c", "if [ ! -f /persistent-app/.initialized ]; then cp -r /app/* /persistent-app/; touch /persistent-app/.initialized; fi"]
+        volumeMounts:
+        - name: app-storage
+          mountPath: /persistent-app
+      containers:
+      - image: mgrodrigues001/api_flask_inferencia:inf_v8.0
+        imagePullPolicy: Always
+        name: api-inferencia
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+        ports:
+        - containerPort: 5001
+        command: ["/bin/sh"]
+        args: ["-c", "tail -f /dev/null"]
+        volumeMounts:
+        - name: app-storage
+          mountPath: /app
+      volumes:
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: api-inferencia-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-inferencia-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-inferencia
+  namespace: default
+spec:
+  ports:
+  - port: 5001
+    protocol: TCP
+    targetPort: 5001
+    nodePort: 32001
+  selector:
+    app: api-inferencia
+  sessionAffinity: None
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-pvc
+spec:
+  # 'storageClassName' depends on your K8s cluster setup.
+  # Common values are 'standard', 'gp2' (on AWS), etc.
+  # You may need to remove this line if you have a default provisioner.
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi # Adjust storage size as needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  labels:
+    app: mlflow
+spec:
+  type: NodePort
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30500
+  selector:
+    app: mlflow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      volumes: # --- Added for persistence ---
+        - name: mlflow-storage
+          persistentVolumeClaim:
+            claimName: mlflow-pvc
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:v2.0.1
+        ports:
+        - containerPort: 5000
+        volumeMounts: # --- Added for persistence ---
+          - name: mlflow-storage
+            mountPath: /mlartifacts
+        command: ["mlflow"]
+        args:
+          - server
+          - --backend-store-uri
+          - sqlite:////mlartifacts/mlflow.db # --- Path updated for persistence ---
+          - --host
+          - 0.0.0.0
+          - --port
+          - "5000"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
