@@ -1,3 +1,5 @@
+from doctest import debug
+from math import e
 import mlflow
 import mlflow.sklearn
 from flask import Flask, request, jsonify
@@ -29,16 +31,24 @@ consumer = None
 
 app = Flask(__name__)
 
+debug_flag = False
+if debug_flag:
+    log_level = std_logging.DEBUG
+    is_debug = True
+else:
+    is_debug = False
+    log_level = std_logging.ERROR
+
 # Simple file logging setup
 std_logging.basicConfig(
     filename='api_update.log',
-    level=std_logging.ERROR,
+    level=log_level,
     format='%(asctime)s %(levelname)s: %(message)s'
 )
 
 # Also log to console
 console_handler = std_logging.StreamHandler()
-console_handler.setLevel(std_logging.ERROR)
+console_handler.setLevel(log_level)
 app.logger.addHandler(console_handler)
 
 # Model serialization function
@@ -87,9 +97,14 @@ def update():
         yi = data[0][-1]  # The last element is the label
         predicted_result = (data[1])
         app.logger.info(f"Received data: {Xi}, {yi}")
+        Xi = dict(zip(
+            ['salary', 'commission', 'age', 'elevel', 'car', 'zipcode', 'hvalue', 'hyears', 'loan'],
+            Xi
+        ))
         try:
-            model = model.learn_one(Xi, yi)
+            model.learn_one(Xi, yi)
         except:
+            app.logger.error(f"Error learning from data: {Xi}, {yi}")
             pass
         counter += 1
 
@@ -247,4 +262,4 @@ def load():
     return jsonify(f'Succeed to load model: {model}')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=False)
+    app.run(host='0.0.0.0', port=5002, debug=is_debug)

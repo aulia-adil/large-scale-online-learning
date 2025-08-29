@@ -85,7 +85,7 @@ def init_dataset(dataset_path, cycle=True):
     dataset_reader = SequentialDatasetReader(dataset_path, cycle)
     return dataset_reader     
 
-host1 = "http://34.133.6.92:32001"
+host1 = "http://34.56.216.10:32001"
 # --- Locust User Class ---
 class MLPredictionUser(HttpUser):
     host = host1

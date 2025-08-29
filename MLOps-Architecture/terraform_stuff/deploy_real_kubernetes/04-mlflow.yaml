@@ -66,7 +66,7 @@ spec:
         volumeMounts:
         - mountPath: /mlartifacts
           name: mlflow-storage
-      nodeName: gke-two-node-cluster-node-pool-1-260bb633-kp47
+      nodeName: gke-two-node-cluster-node-pool-1-a8209908-0c5n
       volumes:
       - name: mlflow-storage
         persistentVolumeClaim:

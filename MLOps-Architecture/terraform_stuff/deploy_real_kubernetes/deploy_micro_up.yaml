@@ -32,7 +32,7 @@ spec:
         volumeMounts:
         - mountPath: /app
           name: app-storage
-      nodeName: gke-two-node-cluster-node-pool-1-260bb633-tgkc
+      nodeName: gke-two-node-cluster-node-pool-1-a8209908-vz7g
       volumes:
       - name: app-storage
         persistentVolumeClaim:

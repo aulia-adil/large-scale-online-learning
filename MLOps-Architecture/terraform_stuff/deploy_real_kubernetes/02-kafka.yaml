@@ -61,4 +61,4 @@ spec:
             cpu: '1'
             memory: 4Gi
       hostname: kafka-broker
-      nodeName: gke-two-node-cluster-node-pool-1-260bb633-tgkc
+      nodeName: gke-two-node-cluster-node-pool-1-a8209908-vz7g

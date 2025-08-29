@@ -1,0 +1,56 @@
+{
+  "version": 4,
+  "terraform_version": "1.12.2",
+  "serial": 52,
+  "lineage": "52773410-ba89-7916-5b9c-fdb9026d6a4b",
+  "outputs": {
+    "cluster_ca_certificate": {
+      "value": null,
+      "type": "string",
+      "sensitive": true
+    },
+    "cluster_endpoint": {
+      "value": null,
+      "type": "string",
+      "sensitive": true
+    },
+    "cluster_name": {
+      "value": "two-node-cluster",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "google_compute_network",
+      "name": "vpc_network",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "auto_create_subnetworks": false,
+            "delete_default_routes_on_create": false,
+            "description": "",
+            "enable_ula_internal_ipv6": false,
+            "gateway_ipv4": "",
+            "id": "projects/fast-learner-project/global/networks/gke-network",
+            "internal_ipv6_range": "",
+            "mtu": 0,
+            "name": "gke-network",
+            "network_firewall_policy_enforcement_order": "AFTER_CLASSIC_FIREWALL",
+            "numeric_id": "468760318654535892",
+            "project": "fast-learner-project",
+            "routing_mode": "REGIONAL",
+            "self_link": "https://www.googleapis.com/compute/v1/projects/fast-learner-project/global/networks/gke-network",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
